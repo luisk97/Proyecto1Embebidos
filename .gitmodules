@@ -1,0 +1,3 @@
+[submodule "appSmartHome"]
+	path = appSmartHome
+	url = https://github.com/luisk97/appSmartHome.git
