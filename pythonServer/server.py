@@ -1,31 +1,36 @@
 from flask import Flask, jsonify, request, abort, make_response
 import json
 
-with open('jsonAPI.txt') as f:
-    data = f.read()
-      
-js = json.loads(data)
-  
-print("Data type after reconstruction : ", type(js))
-print(js)
-
 app = Flask(__name__)
 
 @app.route('/luces', methods=['GET'])
 def get_luces():
+    with open('jsonAPI.txt') as f:
+        datap = f.read()
+    js = json.loads(datap)
     return jsonify(js['luces'])
 
 @app.route('/puertas', methods=['GET'])
 def get_puertas():
+    with open('jsonAPI.txt') as f:
+        datap = f.read()
+    js = json.loads(datap)
     return jsonify(js['puertas'])
 
 @app.route('/camara', methods=['GET'])
 def get_foto():
+    with open('jsonAPI.txt') as f:
+        data = f.read()
+    js = json.loads(data)
     return jsonify(js['camara'])
 
 @app.route('/luces/<int:luz_id>', methods=['PATCH'])
 def update_luz(luz_id):
     req = request.json
+
+    with open('jsonAPI.txt') as f:
+        data = f.read()
+    js = json.loads(data)
 
     luz = [luz for luz in js['luces'] if luz['id'] == luz_id]
     if len(luz) == 0:
