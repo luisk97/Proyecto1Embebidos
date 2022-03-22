@@ -3,12 +3,33 @@ import json
 
 app = Flask(__name__)
 
+@app.route('/login', methods=['POST'])
+def login():
+    req = request.json
+
+    with open('jsonAPI.txt') as f:
+        datap = f.read()
+    js = json.loads(datap)
+
+    user = [user for user in js['users'] if user['user'] == req['user']]
+    if len(user) == 0:
+        return make_response(jsonify({"resp": 2}), 404)
+    if not req:
+        return make_response(jsonify({"resp": 3}), 400)
+    user[0]['pass'] = req['user']
+    if user[0]['password'] == req['password']:
+        return make_response(jsonify({"resp": 1}), 200)
+    else:
+        return make_response(jsonify({"resp": 0}), 200)
+
+
 @app.route('/luces', methods=['GET'])
 def get_luces():
     with open('jsonAPI.txt') as f:
         datap = f.read()
     js = json.loads(datap)
     return jsonify(js['luces'])
+
 
 @app.route('/puertas', methods=['GET'])
 def get_puertas():
@@ -17,12 +38,14 @@ def get_puertas():
     js = json.loads(datap)
     return jsonify(js['puertas'])
 
+
 @app.route('/camara', methods=['GET'])
 def get_foto():
     with open('jsonAPI.txt') as f:
         data = f.read()
     js = json.loads(data)
     return jsonify(js['camara'])
+
 
 @app.route('/luces/<int:luz_id>', methods=['PATCH'])
 def update_luz(luz_id):
@@ -46,6 +69,7 @@ def update_luz(luz_id):
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" encendida correctamente"}), 200)
     else:
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" apagada correctamente"}), 200)
+
 
 if __name__ == '__main__':
     app.run(host='192.168.1.4', port=7000, debug=True, threaded=False)
