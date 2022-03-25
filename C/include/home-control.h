@@ -18,8 +18,6 @@
 #define MAXBUF 1024
 #define DELIM "="
 
-int home_off ();
-int home_on ();
 int led_on (int);
 int led_off (int);
 int state_led (int);

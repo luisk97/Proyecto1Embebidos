@@ -4,7 +4,7 @@ import os
 import include.utils as util
 
 from ctypes import *
-control_so = "/home/lsk8/Documentos/tec/2022 I Semestre/Embebidos/Proyecto1Embebidos/Proyecto1Embebidos/Cprogram/GPIOControl.so"
+control_so = "/media/Proyecto1Embebidos/Cprogram/GPIOControl.so"
 controlFunctions = CDLL(control_so)
 
 app = Flask(__name__)
@@ -32,9 +32,10 @@ def get_luces():
     js = util.readFile('jsonAPI.txt')
     luces = js['luces']
     for luz in luces:
-        #state = controlFunctions.state_led(luz['id'])
-        luz['state'] = 1
-    util.writeFile('jsonAPI.txt', js)
+        if (luz['state'] == 1):
+            controlFunctions.led_on(luz['id'])
+        else:
+            controlFunctions.led_off(luz['id'])
     #print(controlFunctions.square(4))
     return jsonify(js['luces'])
 
@@ -45,8 +46,8 @@ def get_puertas():
     puertas = js['puertas']
     print(puertas)
     for puerta in puertas:
-        #state = controlFunctions.state_door(puerta['id'])
-        puerta['state'] = 1
+        state = controlFunctions.state_door(puerta['id'])
+        puerta['state'] = state
     print(puertas)
     util.writeFile('jsonAPI.txt', js)
     return jsonify(puertas)
@@ -55,8 +56,8 @@ def get_puertas():
 @app.route('/camara', methods=['GET'])
 def get_foto():
     #Llamar camara
-    os.system("fswebcam image.jpg")
-    imageB64 = util.readImage('image.jpg')
+    os.system("fswebcam /media/image.jpg")
+    imageB64 = util.readImage('/media/image.jpg')
     return jsonify({"camara": imageB64})
 
 
@@ -79,15 +80,15 @@ def update_luz(luz_id):
 
     if req['state'] == 1:
         #poner llamada a C
-        #controlFunctions.led_on(luz_id)
+        controlFunctions.led_on(luz_id)
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" encendida correctamente"}), 200)
     else:
         #poner llamada a C
-        #controlFunctions.led_off(luz_id)
+        controlFunctions.led_off(luz_id)
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" apagada correctamente"}), 200)
 
 
 if __name__ == '__main__':
-    #controlFunctions.reserve_all()
+    controlFunctions.reserve_all()
     app.run(host='192.168.100.195', port=7000, debug=True, threaded=False)
     

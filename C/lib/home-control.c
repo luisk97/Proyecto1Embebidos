@@ -9,41 +9,12 @@
 char* NAMES[9] = {"LED_KITCKEN", "LED_BEDROOM_A", "LED_LIVING_ROOM", "LED_BEDROOM_B", "LED_BATHROOM",
   "STATE_FRONT_DOOR", "STATE_BACK_DOOR", "STATE_BEDROOM_A", "STATE_BEDROOM_B"};
 
-int GPIOs[9] = {LED_KITCKEN, LED_BEDROOM_A, LED_LIVING_ROOM, LED_BEDROOM_B, LED_BATHROOM,
-  STATE_FRONT_DOOR, STATE_BACK_DOOR, STATE_BEDROOM_A, STATE_BEDROOM_B};
+int GPIOs[9] = {LED_BATHROOM, LED_BEDROOM_B, LED_LIVING_ROOM, LED_BEDROOM_A, LED_KITCKEN,
+  STATE_BACK_DOOR, STATE_BEDROOM_A, STATE_BEDROOM_B, STATE_FRONT_DOOR};
 
-int Home[9];
+//int Home[9];
 
 /* LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL */
-/**
- * Turn off all leds in the house 
- * @return 0 if all its ok, -1 if there was an error
- */
-int house_off(){
-    read_log();
-    for (int i = 0; i< 5; i++){
-         write_GPIO(GPIOs[i], 0);
-    Home[i] = 0;
-    }
-    write_log();
-    print("All leds are off\n");
-}
-
-/**
- * Turn on all leds in the house
- * @return 0 if all its ok, -1 if there was an error
- */
-
-int house_on(){
-    read_log();
-  for (int i=0; i<5; i++) {
-    write_GPIO(GPIOs[i], 1);
-    Home[i] = 1;
-  }
-  write_log();
-  printf("All leds are on\n");
-
-}
 
 /**
  * Turn on a specific led
@@ -51,16 +22,13 @@ int house_on(){
  * @return 0 if all its ok, -1 if there was an error
  */
 int led_on(int id_led) {
-  read_log ();
   for (int i=0; i<5; i++) {
     if (GPIOs[i]==id_led) {
       write_GPIO (GPIOs[i],1);
       printf("Led %s is on\n", NAMES[i]);
-      Home[i] = 1;
       break;
     }
   }
-  write_log();
 
 }
 
@@ -70,16 +38,13 @@ int led_on(int id_led) {
  * @return 0 if all its ok, -1 if there was an error
  */
 int led_off (int id_led){
-  read_log ();
   for (int i=0; i<5; i++) {
     if (GPIOs[i]==id_led) {
       write_GPIO (GPIOs[i],0);
       printf("Led %s is off\n", NAMES[i]);
-      Home[i] = 0;
       break;
     }
   }
-  write_log();
 
 }
 
@@ -89,14 +54,13 @@ int led_off (int id_led){
  * @param id_led id of the led to be consulted
  * @return state of the led: 0 off, 1 on
  */
-int state_led (int id_led) {
-  read_log ();
+/* int state_led (int id_led) {
   for (int i=0; i<5; i++) {
     if (GPIOs[i]==id_led) {
       return Home[i];
     }
   }
-}
+} */
 
 /* LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL */
 
@@ -108,17 +72,15 @@ int state_led (int id_led) {
  * @return sate of the door: 0 off, 1 on
  */
 int state_door (int id_door){
-  read_log ();
   int state = 0;
   for (int i=5; i<9; i++) {
     if (GPIOs[i]==id_door) {
       int val = read_GPIO (GPIOs[i]);
-      Home[i] = val;
+      //Home[i] = val;
       state = val;
       break;
     }
   }
-  write_log();
   return state;
 }
 
@@ -150,57 +112,6 @@ int free_all () {
   }
 }
 
-/**
- * Write the content of the structure of the home info in the file home.txt
- * @return 0 if all its ok, -1 if there was an error
- */
-int write_log (){
-  FILE *f = fopen(FILENAME, "w");
-  if (f == NULL)
-  {
-    printf("Error opening file!\n");
-    exit(1);
-  }
-
-  fprintf(f, "LED_KITCKEN = %d\n", Home[0]);
-  fprintf(f, "LED_BEDROOM_A = %d\n", Home[1]);
-  fprintf(f, "LED_LIVING_ROOM = %d\n", Home[2]);
-  fprintf(f, "LED_BEDROOM_A = %d\n", Home[3]);
-  fprintf(f, "LED_BATHROOM = %d\n", Home[4]);
-  fprintf(f, "STATE_FRONT_DOOR = %d\n", Home[5]);
-  fprintf(f, "STATE_BACK_DOOR = %d\n", Home[6]);
-  fprintf(f, "STATE_BEDROOM_A = %d\n", Home[7]);
-  fprintf(f, "STATE_BEDROOM_B = %d\n", Home[8]);
-
-  fclose(f);
-}
-
-/**
- * Read the content of the structure of the home info in the file home.txt
- * @return 0 if all its ok, -1 if there was an error
- */
-int read_log (){
-  FILE *file = fopen (FILENAME, "r");
-
-  if (file != NULL)
-  {
-    char line[MAXBUF];
-    int i = 0;
-
-    while(fgets(line, sizeof(line), file) != NULL)
-    {
-      char *cfline;
-      cfline = strstr((char *)line,DELIM);
-      cfline = cfline + strlen(DELIM);
-      Home[i] = atoi(cfline);
-      i++;
-    } // End while
-
-    fclose(file);
-
-  } // End if file
-
-}
 
 /**
  * Set a pin as input or output
