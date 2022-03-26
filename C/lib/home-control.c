@@ -6,10 +6,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-char* NAMES[9] = {"LED_KITCKEN", "LED_BEDROOM_A", "LED_LIVING_ROOM", "LED_BEDROOM_B", "LED_BATHROOM",
-  "STATE_FRONT_DOOR", "STATE_BACK_DOOR", "STATE_BEDROOM_A", "STATE_BEDROOM_B"};
+char* NAMES[9] = {"LED_BATHROOM", "LED_BEDROOM_B", "LED_LIVING_ROOM", "LED_BEDROOM_A", 
+  "LED_KITCHEN", "STATE_BACK_DOOR", "STATE_BEDROOM_A", "STATE_BEDROOM_B", "STATE_FRONT_DOOR"};
 
-int GPIOs[9] = {LED_BATHROOM, LED_BEDROOM_B, LED_LIVING_ROOM, LED_BEDROOM_A, LED_KITCKEN,
+int GPIOs[9] = {LED_BATHROOM, LED_BEDROOM_B, LED_LIVING_ROOM, LED_BEDROOM_A, LED_KITCHEN,
   STATE_BACK_DOOR, STATE_BEDROOM_A, STATE_BEDROOM_B, STATE_FRONT_DOOR};
 
 //int Home[9];
@@ -22,14 +22,8 @@ int GPIOs[9] = {LED_BATHROOM, LED_BEDROOM_B, LED_LIVING_ROOM, LED_BEDROOM_A, LED
  * @return 0 if all its ok, -1 if there was an error
  */
 int led_on(int id_led) {
-  for (int i=0; i<5; i++) {
-    if (GPIOs[i]==id_led) {
-      write_GPIO (GPIOs[i],1);
-      printf("Led %s is on\n", NAMES[i]);
-      break;
-    }
-  }
-
+  write_GPIO (GPIOs[id_led],1);
+  printf("Led %s is on\n", NAMES[id_led]);
 }
 
 /**
@@ -38,29 +32,10 @@ int led_on(int id_led) {
  * @return 0 if all its ok, -1 if there was an error
  */
 int led_off (int id_led){
-  for (int i=0; i<5; i++) {
-    if (GPIOs[i]==id_led) {
-      write_GPIO (GPIOs[i],0);
-      printf("Led %s is off\n", NAMES[i]);
-      break;
-    }
-  }
+  write_GPIO (GPIOs[id_led],0);
+  printf("Led %s is off\n", NAMES[id_led]);
 
 }
-
-
-/**
- * Read the state of a led in the log
- * @param id_led id of the led to be consulted
- * @return state of the led: 0 off, 1 on
- */
-/* int state_led (int id_led) {
-  for (int i=0; i<5; i++) {
-    if (GPIOs[i]==id_led) {
-      return Home[i];
-    }
-  }
-} */
 
 /* LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL - LEDs CONTROL */
 
@@ -72,16 +47,9 @@ int led_off (int id_led){
  * @return sate of the door: 0 off, 1 on
  */
 int state_door (int id_door){
-  int state = 0;
-  for (int i=5; i<9; i++) {
-    if (GPIOs[i]==id_door) {
-      int val = read_GPIO (GPIOs[i]);
-      //Home[i] = val;
-      state = val;
-      break;
-    }
-  }
-  return state;
+  int val = read_GPIO (GPIOs[id_door]);
+  printf("Door %s state is: %d", NAMES[id_door],val);
+  return read_GPIO (GPIOs[id_door]);
 }
 
 /* DOORs CONTROL - DOORs CONTROL - DOORs CONTROL - DOORs CONTROL - DOORs CONTROL - DOORs CONTROL - DOORs CONTROL */
