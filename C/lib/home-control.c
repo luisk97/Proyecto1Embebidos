@@ -1,4 +1,4 @@
-#include <home-control.h>
+#include "../include/home-control.h"
 
 #include <stdio.h>
 #include <stdlib.h>
