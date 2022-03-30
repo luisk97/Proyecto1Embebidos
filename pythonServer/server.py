@@ -2,13 +2,16 @@ from flask import Flask, jsonify, request, abort, make_response
 import json
 import os
 import include.utils as util
-
 from ctypes import *
+
+#Llamado a la libreria en C 
 control_so = "/media/Proyecto1Embebidos/Cprogram/GPIOControl.so"
 controlFunctions = CDLL(control_so)
 
+#Definicion del servidor con flask
 app = Flask(__name__)
 
+#Definicion de la ruta y el metodo para login
 @app.route('/login', methods=['POST'])
 def login():
     req = request.json
@@ -26,33 +29,32 @@ def login():
     else:
         return make_response(jsonify({"resp": 0}), 200)
 
-
+#Definicion de la ruta y el metodo obtener el estado de las luces
 @app.route('/luces', methods=['GET'])
 def get_luces():
     js = util.readFile('jsonAPI.txt')
     luces = js['luces']
     for luz in luces:
         if (luz['state'] == 1):
-            controlFunctions.led_on(luz['id'])
+            controlFunctions.led_on(luz['id'])#llamada a C para encender luz
         else:
-            controlFunctions.led_off(luz['id'])
-    #print(controlFunctions.square(4))
+            controlFunctions.led_off(luz['id'])#llamada a C para apagar luz
     return jsonify(js['luces'])
 
-
+#Definicion de la ruta y el metodo para obtener el estado de las puertas
 @app.route('/puertas', methods=['GET'])
 def get_puertas():
     js = util.readFile('jsonAPI.txt')
     puertas = js['puertas']
     print(puertas)
     for puerta in puertas:
-        state = controlFunctions.state_door(puerta['id'])
+        state = controlFunctions.state_door(puerta['id'])#llamada a C para obtener estado de puerta
         puerta['state'] = state
     print(puertas)
     util.writeFile('jsonAPI.txt', js)
     return jsonify(puertas)
 
-
+#Definicion de la ruta y el metodo para tomar una fotografia
 @app.route('/camara', methods=['GET'])
 def get_foto():
     #Llamar camara
@@ -60,7 +62,7 @@ def get_foto():
     imageB64 = util.readImage('/media/image.jpg')
     return jsonify({"camara": imageB64})
 
-
+#Definicion de la ruta y el metodo para cambiar el estado de las luces
 @app.route('/luces/<int:luz_id>', methods=['PATCH'])
 def update_luz(luz_id):
     req = request.json
@@ -79,16 +81,14 @@ def update_luz(luz_id):
     util.writeFile('jsonAPI.txt',js)
 
     if req['state'] == 1:
-        #poner llamada a C
-        controlFunctions.led_on(luz_id)
+        controlFunctions.led_on(luz_id)#llamada a C para encender luz
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" encendida correctamente"}), 200)
     else:
-        #poner llamada a C
-        controlFunctions.led_off(luz_id)
+        controlFunctions.led_off(luz_id)#llamada a C para apagar luz
         return make_response(jsonify({"message": "Luz "+ str(luz_id) +" apagada correctamente"}), 200)
 
 
 if __name__ == '__main__':
-    controlFunctions.reserve_all()
-    app.run(host='192.168.100.195', port=7000, debug=True, threaded=False)
+    controlFunctions.reserve_all()#llamada a C para reservar los pines
+    app.run(host='192.168.100.195', port=7000, debug=True, threaded=False)#Inicializacion del server
     

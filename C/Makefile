@@ -1,13 +1,9 @@
-# source /opt/poky/2.3.3/environment-setup-cortexa7hf-neon-vfpv4-poky-linux-gnueabi
+all: build
 
-MAKE = make
-LIB = lib
-SRC = src
-
-all:
-		cd $(LIB) && $(MAKE) && cd ..
-		cd $(SRC) && $(MAKE)
+build:
+	make -C lib
+	make -C src
 
 clean:
-		cd $(LIB) && $(MAKE) clean && cd ..
-		cd $(SRC) && $(MAKE) clean
+	make -C lib clean
+		

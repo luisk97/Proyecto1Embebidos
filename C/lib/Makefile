@@ -1,31 +1,13 @@
-# source /opt/poky/2.3.3/environment-setup-cortexa7hf-neon-vfpv4-poky-linux-gnueabi
-#FALTA REVISAR
-OPR = home-control
-SRC = $(OPR).c
-LOPR = lib$(OPR)
+#Makefile carpeta lib
 CC = arm-poky-linux-gnueabi-gcc
 LD = arm-poky-linux-gnueabi-ld
-
-INCLUDE = -I../include
-SYSROOT = --sysroot=/opt/poky/2.3.3/sysroots/cortexa7hf-neon-vfpv4-poky-linux-gnueabi/
-
+SYSROOT = --sysroot=/opt/poky/3.1.2/sysroots/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/
+VAR = -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -mcpu=cortex-a7 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security
 all: dynamic
 
-static:
-		$(CC) ${SYSROOT} -c $(SRC) ${INCLUDE} -mfloat-abi=hard
-		ar rv $(LOPR).a $(OPR).o
-		ranlib $(LOPR).a
-		rm $(OPR).o
-		echo "\n[***Prueba unitaria 1] Biblioteca creada con exito\n"
-#ingles
 dynamic:
-		$(CC) ${SYSROOT} -c $(SRC) ${INCLUDE} -mfloat-abi=hard -fPIC
-		$(LD) ${SYSROOT} -o $(LOPR).so $(OPR).o -shared
-		rm $(OPR).o
-		echo "\n[***Prueba unitaria 1] Biblioteca creada con exito\n" 
-#ingles
-
+	$(CC) ${SYSROOT} -c -fpic home-control.c -o home-control.o $(VAR) 
+	$(LD) ${SYSROOT} -shared -o libhome-control.so home-control.o
 
 clean:
-		rm $(LOPR).so
-		# rm $(LOPR).a
+	rm -f *.o
